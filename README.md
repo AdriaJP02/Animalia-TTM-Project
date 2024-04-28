@@ -7,7 +7,23 @@
 ## Setup & How to Execute
 **1.** PIP Install the component
 ```
+pip install streamlit
 pip install streamlit-audiorec
 ```
+If you have some problems installing them, then try to add " --user" at the end of the commands 
+
 **2.** Execute the frontend part
-streamlit run./Main_Page.py
+```
+# In Ubuntu
+streamlit run ./Main_Page.py
+# In Windows
+streamlit run Main_Page.py
+```
+**3.** Modify the main.py
+```
+def main():
+    # Execute the command "streamlit run frontend/Main_Page.py"
+    subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
+    #subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
+```
+Comment and descomment this line depending on the operative system you are using

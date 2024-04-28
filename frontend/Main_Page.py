@@ -11,7 +11,7 @@ menu_items={
 'About': "# This is a header. This is *my first app*!"
 }
 )
-def main():
+def frontend_main_page():
 
     st.title(':blue[ANIMAL]:violet[IA]')
     st.header("**Main Page**")
@@ -32,4 +32,4 @@ def main():
     st.header(" 🐶🐱🐮 ")
 
 if __name__ == "__main__":
-    main()
+    frontend_main_page()
