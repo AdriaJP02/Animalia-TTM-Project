@@ -1,10 +1,22 @@
 import subprocess
 import streamlit
 from frontend.Main_Page import frontend_main_page
-
+from dataset_creation.dataset_creation import create_dataset
+from machinelearning_models.main_machinelearningmodels import run_machinelearningmodels
+from feature_analysis.feature_analysis import feature_analysis
 def main():
-    # Execute the command "streamlit run frontend/Main_Page.py"
-    subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
+
+    # Dataset creation (Ubuntu)
+    create_dataset()
+
+    # Feature analysis
+    feature_analysis()
+
+    # Run machine learning models
+    run_machinelearningmodels()
+
+    # Frontend
+    #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
     #subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
 
 if __name__ == "__main__":
