@@ -1,6 +1,7 @@
 #https://essentia.upf.edu/essentia_python_examples.html
 # I. Basic imports
 import os
+import glob
 import matplotlib.pyplot as plt
 import essentia.standard as ess
 import essentia.standard as es
@@ -30,12 +31,14 @@ NRG_threshold_ratio = 0.01
 
 segments_dir = os.path.join(main_data_dir,'segments')
 
+#https://sites.google.com/site/gdocs2direct/
 def dataset_files():
-    links = {'dog': 'https://drive.google.com/uc?export=download&id=1pNloKXlqHeu7SBNWTdQq3uNli4P8Io7q'}
+    links = {'dog': 'https://drive.google.com/uc?export=download&id=1pNloKXlqHeu7SBNWTdQq3uNli4P8Io7q',
+             'cat': 'https://drive.google.com/uc?export=download&id=1hlTTbC030SSFZ6Z3X38t43kjylAT5PFk'}
     return links
 
 
-def load_data(main_data_dir, links):
+def load_data(main_data_dir, links, num_files=5):
 
     if not os.path.exists(main_data_dir):  #creating the directory if not exist
         os.mkdir(main_data_dir)
@@ -53,41 +56,47 @@ def load_data(main_data_dir, links):
         os.remove(filename)  #Removing the zip file
         print('Data downloaded and unzipped to: ', targetDir)
 
+        # Keep only the first num_files files
+        files = glob.glob(os.path.join(targetDir, '*'))
+        for f in files[num_files:]:  # delete files from num_files onwards
+            os.remove(f)
+
 
 def create_file_lists(main_data_dir):
     """Collects file lists for each animal sound from the downloaded data.
   """
-    inst_files = dict()
+    animal_files = dict()
     for root, dirs, files in os.walk(main_data_dir):
         for file in files:
             # Only consider files ending with .wav or .aff in the filename
             if (file.endswith('.wav') or file.endswith('.aiff')):
                 file_name = os.path.join(root, file)
-                instrument = file.split('.')[0]  # Instrument name is coded in the filename
-                if len(instrument) > 0:  # Avoid MACOS files starting with ._
-                    files_instrument = inst_files.get(instrument)
-                    if files_instrument is None:
-                        files_instrument = [file_name]
+                animal = file.split('.')[0]  # animal name is coded in the filename
+                if len(animal) > 0:  # Avoid MACOS files starting with ._
+                    files_animal = animal_files.get(animal)
+                    if files_animal is None:
+                        files_animal = [file_name]
                     else:
-                        files_instrument.append(file_name)
-                    inst_files[instrument] = files_instrument
-    return inst_files
+                        files_animal.append(file_name)
+                    animal_files[animal] = files_animal
+    return animal_files
 
-def preprocess_data(inst_files,fs,windowSize,hopSize,NRG_threshold_ratio):
+def preprocess_data(animal_files,fs,windowSize,hopSize,NRG_threshold_ratio):
     fs = 44100
 
-    num_animals = len(inst_files.keys())
+    num_animals = len(animal_files.keys())
     print("Sample waveform plots")
     plt.figure(1, figsize=(5 * num_animals, 3))
     file_ind_inlist = 0  # 0: let's take the first file in the list for sample plots
-    for i, animal in enumerate(inst_files.keys()):
-        sample_file = inst_files[animal][file_ind_inlist]
+    for i, animal in enumerate(animal_files.keys()):
+        #plt.figure(i, figsize=(5, 3))
+        sample_file = animal_files[animal][file_ind_inlist]
         x = ess.MonoLoader(filename=sample_file, sampleRate=fs)()
 
-        plt.subplot(1, num_animals, (i + 1))
         plt.plot(x)
         plt.title(animal)
-
+        #plt.savefig(f'{animal}_output.png', dpi=100)
+        #plt.close(i)
 
     # Let's put in a container to be able to use as a single argument in function calls
     params = {"fs": fs, "windowSize": windowSize, "hopSize": hopSize, "NRG_threshold_ratio": NRG_threshold_ratio}
@@ -117,12 +126,12 @@ def split_file(filename, params):
     stop_indexes = np.nonzero(diff_split_decision < 0)[0] * hopSize
     return (x, NRG, split_decision_func, start_indexes, stop_indexes)
 
-def create_segments_dir(segments_dir,inst_files,params):
+def create_segments_dir(segments_dir,animal_files,params):
     if not os.path.exists(segments_dir):#creating the directory
         os.mkdir(segments_dir)
 
     segment_files = []
-    for instrument, files in inst_files.items():
+    for animal, files in animal_files.items():
         file_count = 0
         for sample_file in files:
             x = ess.MonoLoader(filename = sample_file, sampleRate = fs)()
@@ -135,7 +144,7 @@ def create_segments_dir(segments_dir,inst_files,params):
                     if(np.max(np.abs(x_seg)) > 0.05):
                         #Amplitude normalisation
                         x_seg = x_seg / np.max(np.abs(x_seg))
-                        filename = os.path.join(segments_dir, instrument + '_' + str(file_count) + '.wav')
+                        filename = os.path.join(segments_dir, animal + '_' + str(file_count) + '.wav')
                         ess.MonoWriter(filename = filename, format = 'wav', sampleRate = fs)(x_seg)
                         file_count +=1
                         segment_files.append(filename)
@@ -143,40 +152,44 @@ def create_segments_dir(segments_dir,inst_files,params):
 
 def extract_features(segment_files):
     showPossibleFeatures = True
+    features_dict = {}  # Create a dictionary to store the features
+    num_files_extracted = 5 # Number of files to extract features
 
-    files = segment_files[:5]  # simply pick the first 5 files in the list
+    files = segment_files # simply pick the first 5 files in the list
     for file in files:
         features, features_frames = es.MusicExtractor(lowlevelSilentFrames='drop',
                                                       lowlevelFrameSize=2048,
                                                       lowlevelHopSize=1024,
                                                       lowlevelStats=['mean', 'stdev'])(file)
 
-        #scalar_lowlevel_descriptors = [descriptor for descriptor in features.descriptorNames() if
-         #                              'lowlevel' in descriptor and isinstance(features[descriptor], float)]
-        #return scalar_lowlevel_descriptors
-
         if(showPossibleFeatures):
             print("\nPossible features to analyze: ")
             print(sorted(features.descriptorNames()))
             print("-" * 200)
 
-        print("File: ", file)
-        print("Features extracted:\n")
+        print("File computed: ", file)
+        
 
-        print("MFCC mean: ", features['lowlevel.mfcc.mean'])
-        print("Spectral Centroid mean: ", features['lowlevel.spectral_centroid.mean'])
-        print("Spectral Complexity mean: ", features['lowlevel.spectral_complexity.mean'])
-        print("Dynamic Complexity: ", features['lowlevel.dynamic_complexity'])
-        print("Loudness EBU128: ", features['lowlevel.loudness_ebu128.integrated'])
-        print("Average Loudness: ", features['lowlevel.average_loudness'])
-        print("Spectral Flux: ", features['lowlevel.spectral_flux.mean'])
-        print("Spectral Centroid: ", features['lowlevel.spectral_centroid.mean'])
-        print("Spectral Kurtosis: ", features['lowlevel.spectral_kurtosis.mean'])
-        print("Spectral Spread: ", features['lowlevel.spectral_spread.mean'])
-        print("Spectral Skewness: ", features['lowlevel.spectral_skewness.mean'])
+        # Store the features in the dictionary
+        features_dict[file] = {
+            "MFCC mean": features['lowlevel.mfcc.mean'],
+            "Spectral Centroid mean": features['lowlevel.spectral_centroid.mean'],
+            "Spectral Complexity mean": features['lowlevel.spectral_complexity.mean'],
+            "Dynamic Complexity": features['lowlevel.dynamic_complexity'],
+            "Loudness EBU128": features['lowlevel.loudness_ebu128.integrated'],
+            "Average Loudness": features['lowlevel.average_loudness'],
+            "Spectral Flux": features['lowlevel.spectral_flux.mean'],
+            "Spectral Centroid": features['lowlevel.spectral_centroid.mean'],
+            "Spectral Kurtosis": features['lowlevel.spectral_kurtosis.mean'],
+            "Spectral Spread": features['lowlevel.spectral_spread.mean'],
+            "Spectral Skewness": features['lowlevel.spectral_skewness.mean']
+        }
 
         print("-"*200)
         showPossibleFeatures = False
+
+    return features_dict  # Return the dictionary with the features
+
 
 
 def feature_analysis():
@@ -188,20 +201,27 @@ def feature_analysis():
     load_data(main_data_dir,links)
     print("Data Loaded.")
 
-    inst_files = create_file_lists(main_data_dir)
-    print("List of files loaded: ", inst_files)
+    animal_files = create_file_lists(main_data_dir)
+    print("List of files loaded: ", animal_files)
     print("\n")
 
-    params = preprocess_data(inst_files, fs, windowSize, hopSize, NRG_threshold_ratio)
+    params = preprocess_data(animal_files, fs, windowSize, hopSize, NRG_threshold_ratio)
     print("Data preprocessed.\n")
 
-    num_instruments = len(inst_files.keys())
+    num_animals = len(animal_files.keys())
 
-    segment_files = create_segments_dir(segments_dir,inst_files, params)
-
+    segment_files = create_segments_dir(segments_dir,animal_files, params)
     print(len(segment_files), 'Total animal segment files created.\n')
 
-    extract_features(segment_files)
+    features_dict = extract_features(segment_files)
+
+    for file, features in features_dict.items():
+        print("File: ", file)
+        print("Features:")
+        for feature_name, feature_value in features.items():
+            print(f"{feature_name}: {feature_value}")
+        print("-" * 200)
+
     print("Features Analysis finished.\n")
 
     return 0
