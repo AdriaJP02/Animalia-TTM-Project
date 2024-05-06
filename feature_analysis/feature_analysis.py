@@ -38,7 +38,7 @@ def dataset_files():
     return links
 
 
-def load_data(main_data_dir, links, num_files=5):
+def load_data(main_data_dir, links, num_files=999):
 
     if not os.path.exists(main_data_dir):  #creating the directory if not exist
         os.mkdir(main_data_dir)
@@ -84,18 +84,22 @@ def create_file_lists(main_data_dir):
 def preprocess_data(animal_files,fs,windowSize,hopSize,NRG_threshold_ratio):
     fs = 44100
 
+    if not os.path.exists('plot_animal_sounds'):
+        os.makedirs('plot_animal_sounds')
+
     num_animals = len(animal_files.keys())
     print("Sample waveform plots")
     plt.figure(1, figsize=(5 * num_animals, 3))
     file_ind_inlist = 0  # 0: let's take the first file in the list for sample plots
     for i, animal in enumerate(animal_files.keys()):
-        #plt.figure(i, figsize=(5, 3))
+        plt.figure(i, figsize=(5, 3))
         sample_file = animal_files[animal][file_ind_inlist]
         x = ess.MonoLoader(filename=sample_file, sampleRate=fs)()
 
         plt.plot(x)
         plt.title(animal)
-        #plt.savefig(f'{animal}_output.png', dpi=100)
+        # Save image of the plot in the plot_animal_sounds folder
+        #plt.savefig(f'plot_animal_sounds/{animal}_output.png', dpi=100)
         #plt.close(i)
 
     # Let's put in a container to be able to use as a single argument in function calls
@@ -224,6 +228,6 @@ def feature_analysis():
 
     print("Features Analysis finished.\n")
 
-    return 0
+    return features_dict
 
 

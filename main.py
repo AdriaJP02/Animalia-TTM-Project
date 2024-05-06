@@ -10,10 +10,10 @@ def main():
     create_dataset()
 
     # Feature analysis
-    feature_analysis()
+    features_extracted = feature_analysis()
 
     # Run machine learning models
-    run_machinelearningmodels()
+    run_machinelearningmodels(features_extracted)
 
     # Frontend
     #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
