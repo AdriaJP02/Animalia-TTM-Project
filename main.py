@@ -13,11 +13,12 @@ def main():
     features_extracted = feature_analysis()
 
     # Run machine learning models
+    #run_machinelearningmodels(features_extracted)
     run_machinelearningmodels(features_extracted)
 
     # Frontend
     #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
-    #subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
+    #subprocess.run(["streamlit"srun", "./frontend/Main_Page.py"])  # In Ubuntu
 
 if __name__ == "__main__":
     main()

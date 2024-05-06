@@ -89,15 +89,15 @@ def preprocess_data(animal_files,fs,windowSize,hopSize,NRG_threshold_ratio):
 
     num_animals = len(animal_files.keys())
     print("Sample waveform plots")
-    plt.figure(1, figsize=(5 * num_animals, 3))
+    #plt.figure(1, figsize=(5 * num_animals, 3))
     file_ind_inlist = 0  # 0: let's take the first file in the list for sample plots
     for i, animal in enumerate(animal_files.keys()):
-        plt.figure(i, figsize=(5, 3))
+        #plt.figure(i, figsize=(5, 3))
         sample_file = animal_files[animal][file_ind_inlist]
         x = ess.MonoLoader(filename=sample_file, sampleRate=fs)()
 
-        plt.plot(x)
-        plt.title(animal)
+        #plt.plot(x)
+        #plt.title(animal)
         # Save image of the plot in the plot_animal_sounds folder
         #plt.savefig(f'plot_animal_sounds/{animal}_output.png', dpi=100)
         #plt.close(i)
