@@ -23,7 +23,6 @@ def extract_labels_animals(features_extracted):
             labels_animals.append(1)
         elif animal_name == f"{dir_animal}cat":
             labels_animals.append(0)
-    print("TOTAL LABELS: ",labels_animals)
     return labels_animals
 
 def prepare_features_animals(features_extracted):
