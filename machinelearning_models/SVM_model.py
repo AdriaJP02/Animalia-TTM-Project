@@ -66,10 +66,12 @@ def create_SVM(features_extracted):
     y_pred = classifier_SVM(X_train, X_test, y_train, y_test)
 
     # Print report classifier SVM
+    print("SVM Classifier Report")
     print(classification_report(y_test, y_pred))
 
     print("-"*200)
     # Print confusion matrix classifier SVM
+    print("SVM Confusion Matrix")
     print(confusion_matrix(y_test, y_pred))
 
     return 0

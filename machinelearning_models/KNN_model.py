@@ -51,10 +51,10 @@ def split_train_test(features_animals, labels_animals):
     return  X_train, X_test, y_train, y_test
 
 
-def classifier_KNN( X_train, X_test, y_train, y_test):
+def classifier_KNN( X_train, X_test, y_train, y_test, n_neighbors):
 
     # Create classifier KNN
-    knn = KNeighborsClassifier(n_neighbors=18)
+    knn = KNeighborsClassifier(n_neighbors)
 
     # Train the classifier
     knn.fit(X_train, y_train)
@@ -76,13 +76,19 @@ def create_KNN(features_extracted):
 
     X_train, X_test, y_train, y_test = split_train_test(features_animals_prepared, labels_animals_prepared)
 
-    y_pred = classifier_KNN( X_train, X_test, y_train, y_test)
+    n_neighbors = 29 # change to modify final accuracy (best k = 29)
+
+    y_pred = classifier_KNN( X_train, X_test, y_train, y_test, n_neighbors)
 
     # Print report classifier KNN
+    print("KNN Classifier Report for number of neighbors: ", n_neighbors)
+
     print(classification_report(y_test, y_pred))
 
     print("-"*200)
     # Print confusion matrix classifier KNN
+    print("KNN Confusion Matrix for number of neighbors: ", n_neighbors)
+
     print(confusion_matrix(y_test, y_pred))
 
     return 0

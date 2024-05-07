@@ -8,7 +8,10 @@ from machinelearning_models.KNN_model import create_KNN  # Importa la funció cr
 def run_machinelearningmodels(extracted_features):
 
     print("Running machine learning models")
+    print("Running KNN...\n")
+    create_KNN(extracted_features)
+    print("Running SVM...\n")
     create_SVM(extracted_features)
-    #create_KNN()
+
 
     return 0
