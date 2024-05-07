@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import Image
 from st_audiorec import st_audiorec
 
 # DESIGN implement changes to the standard streamlit UI/UX
@@ -28,13 +29,36 @@ st.markdown('''<style>.css-v37k9u a {color: #ff4c4b;}</style>''',
 st.markdown('''<style>.css-nlntq9 a {color: #ff4c4b;}</style>''',
             unsafe_allow_html=True)  # lightmode
 
+def resize_image(image_input, custom_width, custom_height):
+    # Read the image file
+    image = Image.open(image_input)
+
+    # Choose the resize option
+    size = (custom_width, custom_height)
+
+    resized_image = image.resize(size)
+
+    # Display the resized image
+    st.image(resized_image) #, caption="Resized Image")
+
 def imitating_game():
+    # Establecer el color de fondo
+    page_bg_img = """
+            <style>
+            [data-testid="stAppViewContainer"]{
+            background-color: #DFF4FE;
+            opacity: 0.8;
+            background-image: radial-gradient(#9ec2f4 0.5px, #DFF4FE 0.5px);
+            background-size: 10px 10px;
+            </style>
+            """
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    #resize_image(image_input="frontend/GUI/AnimaliaLogoMini.png", custom_width=120, custom_height=230)
 
-    st.title(':blue[ANIMAL]:violet[IA]')
-    
-    st.header("🎙️ Imitating Animal Sounds Game 🎙️")
+    #st.header("🎙️ Imitating Animal Sounds Game 🎙️")
+    st.image("frontend/GUI/TitolJoc3.png", use_column_width=True)
 
-    st.write("In this game you are going to select an animal and then you will have to imitate its sound")
+    st.write("En aquest joc hauràs d'imitar l'animal que vulguis.")
 
     #st.success('Data is loaded!')
 
@@ -43,18 +67,18 @@ def imitating_game():
 
     # Selectbox con nombres de animales y sus emojis
     animal_options = {
-        "Dog 🐶": "🐶",
-        "Cat 🐱": "🐱",
-        "Mouse 🐭": "🐭",
-        "Rabbit 🐰": "🐰",
-        "Cow 🐮": "🐮",
-        "Fox 🦊": "🦊",
+        "Gos 🐶": "🐶",
+        "Gat 🐱": "🐱",
+        "Ratolí 🐭": "🐭",
+        "Conill 🐰": "🐰",
+        "Vaca 🐮": "🐮",
+        "Guineu 🦊": "🦊",
     }
-    selected_animal = st.selectbox("Select an animal:", list(animal_options.keys()))
+    selected_animal = st.selectbox("Selecciona un animal:", list(animal_options.keys()))
 
     # Obtener el emoji del animal seleccionado
     selected_emoji = selected_animal #animal_options[selected_animal]
-    st.write(f"You selected: {selected_emoji}")
+    st.write(f"Has seleccionat: {selected_emoji}")
 
     wav_audio_data = st_audiorec()
 

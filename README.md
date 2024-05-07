@@ -7,8 +7,11 @@
 ## Setup & How to Execute
 **1.** PIP Install the component
 ```
-pip install streamlit
-pip install streamlit-audiorec
+pip install streamlit #Interface
+pip install streamlit-audiorec #Audio input
+pip install pillow #Resize image
+pip install streamlit-image-select #Image select
+pip install pydub
 ```
 If you have some problems installing them, then try to add " --user" at the end of the commands 
 
@@ -23,7 +26,7 @@ streamlit run Main_Page.py
 ```
 def main():
     # Execute the command "streamlit run frontend/Main_Page.py"
-    subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
-    #subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
+    #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
+    subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
 ```
 Comment and descomment this line depending on the operative system you are using
