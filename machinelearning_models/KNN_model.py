@@ -8,6 +8,7 @@ import numpy as np
 
 #Create the labels from the name audios stored in features_dict
 def extract_labels_animals(features_extracted):
+    print(features_extracted)
     labels_animals = []
 
     for file in features_extracted.keys():
@@ -20,10 +21,8 @@ def extract_labels_animals(features_extracted):
 
         if animal_name == f"{dir_animal}dog":
             labels_animals.append(1)
-            print("LABEL 1")
         elif animal_name == f"{dir_animal}cat":
             labels_animals.append(0)
-            print("LABEL 0")
     print("TOTAL LABELS: ",labels_animals)
     return labels_animals
 

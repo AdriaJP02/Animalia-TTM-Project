@@ -7,11 +7,10 @@ from feature_analysis.feature_analysis import feature_analysis
 def main():
 
     # Dataset creation (Ubuntu)
-    create_dataset()
+    #create_dataset()
 
     # Feature analysis
     features_extracted = feature_analysis()
-
     # Run machine learning models
     #run_machinelearningmodels(features_extracted)
     run_machinelearningmodels(features_extracted)
