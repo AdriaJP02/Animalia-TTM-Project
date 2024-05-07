@@ -12,11 +12,76 @@ from sklearn.preprocessing import LabelEncoder
 
 from sklearn.model_selection import train_test_split
 
+def extract_features(audio_file):
 
+    loader = es.MonoLoader(filename=audio_file)
+
+    audio = loader()
+
+
+
+    if len(audio) % 2 != 0:
+
+        audio = audio[:-1]
+
+
+
+    # Extract MFCC features
+
+    mfcc_extractor = es.MFCC()
+
+    mfccs = mfcc_extractor(audio)
+
+    mfccs_concatenated = np.hstack(mfccs)
+
+
+
+    # Extract spectral centroid time
+
+    spectral_centroid_time_extractor = es.SpectralCentroidTime()
+
+    spectral_centroid_time = spectral_centroid_time_extractor(audio)
+
+
+
+    # Extract spectral bandwidth
+
+    spectrum_extractor = es.Spectrum()
+
+    spectrum = spectrum_extractor(audio)
+
+    spectral_bandwidth = es.CentralMoments()(spectrum)[2] ** 0.5  # Standard deviation of the spectrum
+
+
+
+    # Extract zero-crossing rate
+
+    zero_crossing_rate_extractor = es.ZeroCrossingRate()
+
+    zero_crossing_rate = zero_crossing_rate_extractor(audio)
+
+
+
+    # Extract energy
+
+    energy_extractor = es.Energy()
+
+    energy = energy_extractor(audio)
+
+
+
+    # Concatenate all features into a single array
+
+    features = np.hstack((mfccs_concatenated, spectral_centroid_time, spectral_bandwidth, zero_crossing_rate, energy))
+
+
+
+    return features
 
 # Define function to preprocess the audio files and extract features
 
-def preprocess_data(data_dir, debug=False):
+def preprocess_data( debug=False):
+    data_dir = os.path.join(os.getcwd(), "animals")
 
     features = []
 
@@ -27,7 +92,7 @@ def preprocess_data(data_dir, debug=False):
 
 
     # Labels to be excluded
-    excluded_labels = ['Chicken', 'Donkey', 'Frog', 'Monkey', 'Sheep','Cow']
+    excluded_labels = ['Chicken', 'Donkey', 'Frog', 'Monkey', 'Sheep','Cow','segments']
 
 
 
@@ -85,119 +150,116 @@ def preprocess_data(data_dir, debug=False):
 
 # Define the data directory
 
-data_dir = "./"  # Update the data directory with the folder containing animal sounds
 
+def create_KNN2(extracted_features):
 
+    features, labels_encoded, unique_labels, label_counts = preprocess_data( debug=True)
 
-# Load and preprocess the data
 
-features, labels_encoded, unique_labels, label_counts = preprocess_data(data_dir, debug=False)
 
+    # Split data into training and test sets
 
+    X_train, X_test, y_train, y_test = train_test_split(features, labels_encoded, test_size=0.2, random_state=42)
 
-# Split data into training and test sets
 
-X_train, X_test, y_train, y_test = train_test_split(features, labels_encoded, test_size=0.2, random_state=42)
 
+    # Define and compile the neural network
 
+    num_classes = len(unique_labels)  # Calculate number of classes
 
-# Define and compile the neural network
+    model = tf.keras.Sequential([
 
-num_classes = len(unique_labels)  # Calculate number of classes
+        tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),  # Input shape based on number of features
 
-model = tf.keras.Sequential([
+        tf.keras.layers.Dense(64, activation='relu'),
 
-    tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),  # Input shape based on number of features
+        tf.keras.layers.Dense(num_classes, activation='softmax')  # Softmax activation for multi-class classification
 
-    tf.keras.layers.Dense(64, activation='relu'),
+    ])
 
-    tf.keras.layers.Dense(num_classes, activation='softmax')  # Softmax activation for multi-class classification
 
-])
 
+    model.compile(optimizer='adam',
 
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),  # Use from_logits=False when using softmax activation
 
-model.compile(optimizer='adam',
+                  metrics=['accuracy'])
 
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),  # Use from_logits=False when using softmax activation
 
-              metrics=['accuracy'])
 
+    # Train the model
 
+    history = model.fit(X_train, y_train, epochs=1000, validation_data=(X_test, y_test))
 
-# Train the model
 
-history = model.fit(X_train, y_train, epochs=20, validation_data=(X_test, y_test))
 
+    # Plot the loss for different labels
 
+    plt.figure(figsize=(10, 6))
 
-# Plot the loss for different labels
+    for label_idx in range(len(unique_labels)):
 
-plt.figure(figsize=(10, 6))
+        label = unique_labels[label_idx]
 
-for label_idx in range(len(unique_labels)):
+        label_indices = np.where(y_train == label_idx)[0]  # Get integer indices
 
-    label = unique_labels[label_idx]
+        if len(label_indices) > 0:
 
-    label_indices = np.where(y_train == label_idx)[0]  # Get integer indices
+            label_history = [history.history['loss'][idx] for idx in label_indices if idx < len(history.history['loss'])]
 
-    if len(label_indices) > 0:
+            plt.plot(label_history, label=f'Label {label}')
 
-        label_history = [history.history['loss'][idx] for idx in label_indices if idx < len(history.history['loss'])]
+    plt.title('Loss for Different Labels')
 
-        plt.plot(label_history, label=f'Label {label}')
+    plt.xlabel('Epoch')
 
-plt.title('Loss for Different Labels')
+    plt.ylabel('Loss')
 
-plt.xlabel('Epoch')
+    plt.legend()
 
-plt.ylabel('Loss')
+    plt.show()
 
-plt.legend()
 
-plt.show()
 
+    # Evaluate model on test data
 
+    loss, accuracy = model.evaluate(X_test, y_test)
 
-# Evaluate model on test data
 
-loss, accuracy = model.evaluate(X_test, y_test)
 
+    # Print overall accuracy
 
+    print("Overall Test Accuracy:", accuracy)
 
-# Print overall accuracy
 
-print("Overall Test Accuracy:", accuracy)
 
+    # Calculate accuracy for each label
 
+    label_accuracies = {}
 
-# Calculate accuracy for each label
+    for label_idx in range(len(unique_labels)):
 
-label_accuracies = {}
+        label_test_indices = np.where(y_test == label_idx)[0]
 
-for label_idx in range(len(unique_labels)):
+        if len(label_test_indices) > 0:
 
-    label_test_indices = np.where(y_test == label_idx)[0]
+            label_accuracy = model.evaluate(X_test[label_test_indices], y_test[label_test_indices], verbose=0)[1]
 
-    if len(label_test_indices) > 0:
+            label_accuracies[unique_labels[label_idx]] = label_accuracy
 
-        label_accuracy = model.evaluate(X_test[label_test_indices], y_test[label_test_indices], verbose=0)[1]
 
-        label_accuracies[unique_labels[label_idx]] = label_accuracy
 
+    # Print accuracy and number of samples for each label
 
+    print("\nAccuracy and Number of Samples for Each Label:")
 
-# Print accuracy and number of samples for each label
+    for label_name, accuracy in label_accuracies.items():
 
-print("\nAccuracy and Number of Samples for Each Label:")
+        label_index = np.where(unique_labels == label_name)[0][0]
 
-for label_name, accuracy in label_accuracies.items():
+        num_samples = label_counts[label_index]
 
-    label_index = np.where(unique_labels == label_name)[0][0]
-
-    num_samples = label_counts[label_index]
-
-    print(f"{label_name}: Accuracy - {accuracy}, Number of Samples - {num_samples}")
+        print(f"{label_name}: Accuracy - {accuracy}, Number of Samples - {num_samples}")
 
 
 
