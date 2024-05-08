@@ -11,8 +11,8 @@ def main():
 
     # Feature analysis
     features_extracted = feature_analysis()
+
     # Run machine learning models
-    #run_machinelearningmodels(features_extracted)
     run_machinelearningmodels(features_extracted)
 
     # Frontend
