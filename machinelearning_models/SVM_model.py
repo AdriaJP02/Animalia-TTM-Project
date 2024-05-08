@@ -74,4 +74,6 @@ def create_SVM(features_extracted):
     print("SVM Confusion Matrix")
     print(confusion_matrix(y_test, y_pred))
 
+    print("-" * 200)
+
     return 0

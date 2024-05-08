@@ -91,4 +91,6 @@ def create_KNN(features_extracted):
 
     print(confusion_matrix(y_test, y_pred))
 
+    print("-" * 200)
+
     return 0
