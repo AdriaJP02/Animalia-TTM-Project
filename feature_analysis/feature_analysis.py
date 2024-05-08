@@ -88,7 +88,7 @@ def preprocess_data(animal_files,fs,windowSize,hopSize,NRG_threshold_ratio):
         os.makedirs('plot_animal_sounds')
 
     num_animals = len(animal_files.keys())
-    print("Sample waveform plots")
+   
     #plt.figure(1, figsize=(5 * num_animals, 3))
     file_ind_inlist = 0  # 0: let's take the first file in the list for sample plots
     for i, animal in enumerate(animal_files.keys()):
@@ -166,12 +166,7 @@ def extract_features(segment_files):
                                                       lowlevelHopSize=1024,
                                                       lowlevelStats=['mean', 'stdev'])(file)
 
-        if(showPossibleFeatures):
-            print("\nPossible features to analyze: ")
-            print(sorted(features.descriptorNames()))
-            print("-" * 200)
-
-        print("File computed: ", file)
+        
         
 
         # Store the features in the dictionary
@@ -189,42 +184,35 @@ def extract_features(segment_files):
             "Spectral Skewness": features['lowlevel.spectral_skewness.mean']
         }
 
-        print("-"*200)
         showPossibleFeatures = False
 
     return features_dict  # Return the dictionary with the features
 
 
 
-def feature_analysis():
+def feature_analysis(update = False):
     print("Init Feature analysis...\n")
+    
+    if (not os.path.exists("animals")) or update:
+        links = dataset_files()
+        print("Dataset Links Loaded.\n")
 
-    links = dataset_files()
-    print("Dataset Links Loaded.\n")
-
-    load_data(main_data_dir,links)
-    print("Data Loaded.")
+        load_data(main_data_dir,links)
+        print("Data Loaded.")
 
     animal_files = create_file_lists(main_data_dir)
-    print("List of files loaded: ", animal_files)
-    print("\n")
+  
+    
 
     params = preprocess_data(animal_files, fs, windowSize, hopSize, NRG_threshold_ratio)
     print("Data preprocessed.\n")
 
     num_animals = len(animal_files.keys())
-
     segment_files = create_segments_dir(segments_dir,animal_files, params)
     print(len(segment_files), 'Total animal segment files created.\n')
 
     features_dict = extract_features(segment_files)
 
-    for file, features in features_dict.items():
-        print("File: ", file)
-        print("Features:")
-        for feature_name, feature_value in features.items():
-            print(f"{feature_name}: {feature_value}")
-        print("-" * 200)
 
     print("Features Analysis finished.\n")
 
