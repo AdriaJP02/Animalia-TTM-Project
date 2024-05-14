@@ -1,5 +1,7 @@
 #https://essentia.upf.edu/essentia_python_examples.html
 # I. Basic imports
+import numbers
+from joblib import dump, load
 import os
 import glob
 import matplotlib.pyplot as plt
@@ -25,16 +27,18 @@ warnings.filterwarnings('ignore')  #suppress warnings
 main_data_dir = 'animals'
 
 fs = 44100
-windowSize = 4096 * 4
-hopSize = 4096 * 2
-NRG_threshold_ratio = 0.01
+windowSize = 2048 * 4
+hopSize = 2048 * 2
+NRG_threshold_ratio = 0.05
 
 segments_dir = os.path.join(main_data_dir,'segments')
 
 #https://sites.google.com/site/gdocs2direct/
 def dataset_files():
     links = {'dog': 'https://drive.google.com/uc?export=download&id=1pNloKXlqHeu7SBNWTdQq3uNli4P8Io7q',
-             'cat': 'https://drive.google.com/uc?export=download&id=1hlTTbC030SSFZ6Z3X38t43kjylAT5PFk'}
+             'cat': 'https://drive.google.com/uc?export=download&id=1hlTTbC030SSFZ6Z3X38t43kjylAT5PFk',
+             'Kus': 'https://drive.google.com/uc?export=download&id=1krCt4AnNB0lD9IyYU5oYX-4_jNEJsFa3',
+             'inek': 'https://drive.google.com/uc?export=download&id=1Z0fK-A5X04VkkLxPh0nzrbOD-YlHljjW'}
     return links
 
 
@@ -142,10 +146,10 @@ def create_segments_dir(segments_dir,animal_files,params):
             (x, NRG, split_decision_func, start_indexes, stop_indexes) = split_file(sample_file, params)
             #Croping segments
             for start, stop in zip(start_indexes, stop_indexes):
-                if stop - start > fs/3:#let's only keep segments larger than 1/3 second
+                if stop - start > fs/5:#let's only keep segments larger than 1/5 second
                     x_seg = x[start: stop]
                     #Final check for amplitude (to avoid silent segments selection due to noise in split function)
-                    if(np.max(np.abs(x_seg)) > 0.05):
+                    if(np.max(np.abs(x_seg)) > 0.03):
                         #Amplitude normalisation
                         x_seg = x_seg / np.max(np.abs(x_seg))
                         filename = os.path.join(segments_dir, animal + '_' + str(file_count) + '.wav')
@@ -157,37 +161,24 @@ def create_segments_dir(segments_dir,animal_files,params):
 def extract_features(segment_files):
     showPossibleFeatures = True
     features_dict = {}  # Create a dictionary to store the features
-    num_files_extracted = 5 # Number of files to extract features
+    num_files_extracted = 1 # Number of files to extract features
 
-    files = segment_files # simply pick the first 5 files in the list
+    files = segment_files
     for file in files:
-        features, features_frames = es.MusicExtractor(lowlevelSilentFrames='drop',
-                                                      lowlevelFrameSize=2048,
-                                                      lowlevelHopSize=1024,
-                                                      lowlevelStats=['mean', 'stdev'])(file)
+        # Use FreesoundExtractor
+        extractor = es.FreesoundExtractor(lowlevelSilentFrames='drop',
+                                          lowlevelFrameSize=2048,
+                                          lowlevelHopSize=1024,
+                                          lowlevelStats=['mean', 'stdev'])
+        features, features_frames = extractor(file)
 
-        
-        
-
-        # Store the features in the dictionary
-        features_dict[file] = {
-            "MFCC mean": features['lowlevel.mfcc.mean'],
-            "Spectral Centroid mean": features['lowlevel.spectral_centroid.mean'],
-            "Spectral Complexity mean": features['lowlevel.spectral_complexity.mean'],
-            "Dynamic Complexity": features['lowlevel.dynamic_complexity'],
-            "Loudness EBU128": features['lowlevel.loudness_ebu128.integrated'],
-            "Average Loudness": features['lowlevel.average_loudness'],
-            "Spectral Flux": features['lowlevel.spectral_flux.mean'],
-            "Spectral Centroid": features['lowlevel.spectral_centroid.mean'],
-            "Spectral Kurtosis": features['lowlevel.spectral_kurtosis.mean'],
-            "Spectral Spread": features['lowlevel.spectral_spread.mean'],
-            "Spectral Skewness": features['lowlevel.spectral_skewness.mean']
-        }
-
-        showPossibleFeatures = False
+        # Store all lowlevel features in the dictionary
+        features_dict[file] = {feature_name: features[feature_name]
+                               for feature_name in features.descriptorNames()
+                               if 'lowlevel' in feature_name or 'tonal' in feature_name
+                               and isinstance(features[feature_name], numbers.Number)}
 
     return features_dict  # Return the dictionary with the features
-
 
 
 def feature_analysis(update = False):
@@ -201,8 +192,7 @@ def feature_analysis(update = False):
         print("Data Loaded.")
 
     animal_files = create_file_lists(main_data_dir)
-  
-    
+
 
     params = preprocess_data(animal_files, fs, windowSize, hopSize, NRG_threshold_ratio)
     print("Data preprocessed.\n")
@@ -212,7 +202,6 @@ def feature_analysis(update = False):
     print(len(segment_files), 'Total animal segment files created.\n')
 
     features_dict = extract_features(segment_files)
-
 
     print("Features Analysis finished.\n")
 

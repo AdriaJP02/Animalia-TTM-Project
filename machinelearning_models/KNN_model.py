@@ -18,24 +18,36 @@ def extract_labels_animals(features_extracted):
 
         print("ANIMAL: ",animal_name)
 
-        if animal_name == f"{dir_animal}dog":
-            labels_animals.append(1)
-            print("LABEL 1")
-        elif animal_name == f"{dir_animal}cat":
+        if animal_name == f"{dir_animal}cat":
             labels_animals.append(0)
             print("LABEL 0")
+        elif animal_name == f"{dir_animal}dog":
+            labels_animals.append(1)
+            print("LABEL 1")
+        elif animal_name == f"{dir_animal}Kus":
+            labels_animals.append(2)
+            print("LABEL 2")
+        elif animal_name == f"{dir_animal}inek":
+            labels_animals.append(3)
+            print("LABEL 3")
+
     print("TOTAL LABELS: ",labels_animals)
     return labels_animals
 
 def prepare_features_animals(features_extracted):
     prepared_features = []
+
     for feature_dict in features_extracted.values():
+
         # Flatten the feature_dict into a single list
         flat_features = []
         for value in feature_dict.values():
+
             if isinstance(value, list) or isinstance(value, np.ndarray):
+
                 flat_features.extend(value)
             else:
+
                 flat_features.append(value)
         prepared_features.append(flat_features)
     return prepared_features
@@ -44,15 +56,15 @@ def prepare_features_animals(features_extracted):
 
 
 def split_train_test(features_animals, labels_animals):
-
+    print("split1")
     # Split data in train and test
-    X_train, X_test, y_train, y_test = train_test_split(features_animals, labels_animals, test_size=0.2, random_state=42, stratify=labels_animals)
+    X_train, X_test, y_train, y_test = train_test_split(features_animals, labels_animals, test_size=0.2, random_state=42)
 
     return  X_train, X_test, y_train, y_test
 
 
 def classifier_KNN( X_train, X_test, y_train, y_test, n_neighbors):
-
+    print("class1")
     # Create classifier KNN
     knn = KNeighborsClassifier(n_neighbors)
 
@@ -76,7 +88,7 @@ def create_KNN(features_extracted):
 
     X_train, X_test, y_train, y_test = split_train_test(features_animals_prepared, labels_animals_prepared)
 
-    n_neighbors = 29 # change to modify final accuracy (best k = 29)
+    n_neighbors = 10 # change to modify final accuracy (best k = 29)
 
     y_pred = classifier_KNN( X_train, X_test, y_train, y_test, n_neighbors)
 

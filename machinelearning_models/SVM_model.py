@@ -9,17 +9,26 @@ def extract_labels_animals(features_extracted):
     labels_animals = []
 
     for file in features_extracted.keys():
+
         animal_name, _ = file.split('_', 1)
+
         dir_animal = "animals/segments/"
 
         print("ANIMAL: ",animal_name)
 
-        if animal_name == f"{dir_animal}dog":
-            labels_animals.append(1)
-            print("LABEL 1")
-        elif animal_name == f"{dir_animal}cat":
+        if animal_name == f"{dir_animal}cat":
             labels_animals.append(0)
             print("LABEL 0")
+        elif animal_name == f"{dir_animal}dog":
+            labels_animals.append(1)
+            print("LABEL 1")
+        elif animal_name == f"{dir_animal}Kus":
+            labels_animals.append(2)
+            print("LABEL 2")
+        elif animal_name == f"{dir_animal}inek":
+            labels_animals.append(3)
+            print("LABEL 3")
+
     print("TOTAL LABELS: ",labels_animals)
     return labels_animals
 
@@ -31,23 +40,27 @@ def prepare_features_animals(features_extracted):
         for value in feature_dict.values():
             if isinstance(value, list) or isinstance(value, np.ndarray):
                 flat_features.extend(value)
+
             else:
                 flat_features.append(value)
+
         prepared_features.append(flat_features)
     return prepared_features
 
 def split_train_test(features_animals, labels_animals):
+
     # Split data in train and test
     X_train, X_test, y_train, y_test = train_test_split(features_animals, labels_animals, test_size=0.2, random_state=42, stratify=labels_animals)
     return X_train, X_test, y_train, y_test
 
 def classifier_SVM(X_train, X_test, y_train, y_test):
+    print("classsvm1")
     # Create SVM classifier
     svm = SVC(kernel='linear')
-
+    print("classsvm2")
     # Train the classifier
     svm.fit(X_train, y_train)
-
+    print("classsvm3") #no aparece este print, se queda pillado
     # Predict labels for the test set
     y_pred = svm.predict(X_test)
 
