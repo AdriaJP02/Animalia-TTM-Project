@@ -1,18 +1,33 @@
 import streamlit as st
 from PIL import Image
 import io
+#import hydralit_components as hc
+#from streamlit_option_menu import option_menu
+#from st_on_hover_tabs import on_hover_tabs
 
 st.set_page_config(
-page_title="Animalia Main Page",
-page_icon="🐮",
-layout="wide",
-initial_sidebar_state="expanded",
-menu_items={
-'Get Help': 'https://upf.edu/help',
-'Report a bug': "https://upf.edu/bug",
-'About': "# This is a header. This is *my first app*!"
-}
+    page_title="Animalia Main Page",
+    page_icon="🐮",
+    layout="centered", #wide
+    initial_sidebar_state="expanded", #expanded, collapsed
+    menu_items={
+    'Get Help': 'https://upf.edu/help',
+    'Report a bug': "https://upf.edu/bug",
+    'About': "# This is a header. This is *my first app*!"
+    }
 )
+
+
+#over_theme = {'txc_inactive': '#FFFFFF'}
+#menu_id = hc.nav_bar(
+    #menu_definition=menu_data,
+    #override_theme=over_theme,
+    #home_name='Home',
+    #login_name='Logout',
+    #hide_streamlit_markers=False, #will show the st hamburger as well as the navbar now!
+    #sticky_nav=True, #at the top or not
+    #sticky_mode='pinned', #jumpy or not-jumpy, but sticky or pinned
+#)
 
 # Function to resize the image
 def resize_image(image_input, custom_width, custom_height):

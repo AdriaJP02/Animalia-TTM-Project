@@ -2,11 +2,9 @@ import streamlit as st
 from PIL import Image
 from st_audiorec import st_audiorec
 
-# DESIGN implement changes to the standard streamlit UI/UX
-# --> optional, not relevant for the functionality of the component!
 
 st.set_page_config(
-page_title="Imitating Game",
+page_title="Imita animals",
 page_icon="🎙",
 layout="wide",
 initial_sidebar_state="expanded",
@@ -87,12 +85,10 @@ def imitating_game():
     with col_info:
         st.write('\n')  # add vertical spacer
         st.write('\n')  # add vertical spacer
-        st.write('The .wav audio data, as received in the backend Python code,'
-                 ' will be displayed below this message as soon as it has'
-                 ' been processed. [This informative message is not part of'
-                 ' the audio recorder and can be removed easily] 🎈')
 
     if wav_audio_data is not None:
+        # output of percentages in animals
+        st.image("frontend/GUI/PercentatgesAnimals.png", use_column_width=True)
         # display audio data as received on the Python side
         col_playback, col_space = st.columns([0.58,0.42])
         with col_playback:

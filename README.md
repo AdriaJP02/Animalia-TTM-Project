@@ -12,6 +12,7 @@ pip install streamlit-audiorec #Audio input
 pip install pillow #Resize image
 pip install streamlit-image-select #Image select
 pip install pydub
+pip install -U hydralit_components
 ```
 If you have some problems installing them, then try to add " --user" at the end of the commands 
 
