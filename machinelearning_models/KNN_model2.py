@@ -12,6 +12,44 @@ from sklearn.preprocessing import LabelEncoder
 
 from sklearn.model_selection import train_test_split
 
+
+def extract_labels_animals(features_extracted):
+    labels_animals = []
+    unique_animals = set()
+
+    label_count = 0
+    animal_label_map = {}
+
+    for file in features_extracted.keys():
+        animal_name, _ = file.split('_', 1)
+        unique_animals.add(animal_name)
+
+        print("ANIMAL: ", animal_name)
+
+        if animal_name not in animal_label_map:
+            animal_label_map[animal_name] = label_count
+            label_count += 1
+
+        labels_animals.append(animal_label_map[animal_name])
+
+    print("TOTAL LABELS: ", labels_animals)
+    print("UNIQUE ANIMALS: ", unique_animals)
+
+    return labels_animals, list(unique_animals)
+
+def prepare_features_animals(features_extracted):
+    prepared_features = []
+    for feature_dict in features_extracted.values():
+        # Flatten the feature_dict into a single list
+        flat_features = []
+        for value in feature_dict.values():
+            if isinstance(value, list) or isinstance(value, np.ndarray):
+                flat_features.extend(value)
+            else:
+                flat_features.append(value)
+        prepared_features.append(flat_features)
+    return prepared_features
+
 def extract_features(audio_file):
 
     loader = es.MonoLoader(filename=audio_file)
@@ -116,9 +154,7 @@ def preprocess_data( debug=False):
 
                     labels_names.append(label)
 
-                    if debug:
-
-                        print("Processing file:", audio_file, "Label:", label)  # Print filename and label
+                
 
                     # Extract features from audio file
 
@@ -148,18 +184,20 @@ def preprocess_data( debug=False):
 
 
 
-# Define the data directory
+
 
 
 def create_KNN2(extracted_features):
-
-    features, labels_encoded, unique_labels, label_counts = preprocess_data( debug=True)
-
-
+    
+    #features, labels_encoded, unique_labels, label_counts = preprocess_data( debug=True)
+    
+    labels,unique_labels = extract_labels_animals(extracted_features)
+    features = prepare_features_animals(extracted_features)
+    labels_encoded = np.array(labels)
 
     # Split data into training and test sets
 
-    X_train, X_test, y_train, y_test = train_test_split(features, labels_encoded, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(np.array(features), labels_encoded, test_size=0.2, random_state=42)
 
 
 
@@ -170,9 +208,7 @@ def create_KNN2(extracted_features):
     model = tf.keras.Sequential([
 
         tf.keras.layers.Dense(64, activation='relu', input_shape=(X_train.shape[1],)),  # Input shape based on number of features
-
         tf.keras.layers.Dense(64, activation='relu'),
-
         tf.keras.layers.Dense(num_classes, activation='softmax')  # Softmax activation for multi-class classification
 
     ])
@@ -255,11 +291,6 @@ def create_KNN2(extracted_features):
 
     for label_name, accuracy in label_accuracies.items():
 
-        label_index = np.where(unique_labels == label_name)[0][0]
-
-        num_samples = label_counts[label_index]
-
-        print(f"{label_name}: Accuracy - {accuracy}, Number of Samples - {num_samples}")
-
+        print(f"{label_name}: Accuracy - {accuracy}, ")
 
 
