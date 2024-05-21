@@ -15,7 +15,7 @@ def dataset_files():
              'inek': 'https://drive.google.com/uc?export=download&id=1Z0fK-A5X04VkkLxPh0nzrbOD-YlHljjW',
              'maymun':'https://drive.google.com/uc?export=download&id=1fGnxcfvtRYqJWo6bzgleFYRTON76JQ0y',
              'tavuk':'https://drive.google.com/uc?export=download&id=1Jjc-lR1__3jniHddsFMDOJjflmDK1R8c',
-             'koyun':'https://drive.google.com/uc?export=download&id=17YjW-4twQt7QpENzbCDu8MUOTR6K_ra-'}
+            'koyun':'https://drive.google.com/uc?export=download&id=17YjW-4twQt7QpENzbCDu8MUOTR6K_ra-'}
     return links
 
 def main():
