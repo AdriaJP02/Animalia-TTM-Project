@@ -25,7 +25,7 @@ def main():
 
     # Feature analysis
     update = True
-    if os.path.exists('feature_analysis/features_dict.joblib') and !update:
+    if os.path.exists('feature_analysis/features_dict.joblib') and not update:
         # If the features file exists, load it
         features_extracted = load('feature_analysis/features_dict.joblib')
     else:
