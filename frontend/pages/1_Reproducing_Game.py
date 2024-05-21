@@ -7,7 +7,7 @@ from io import BytesIO
 
 
 st.set_page_config(
-        page_title="Reproducing Game",
+        page_title="Escolta els animals",
         page_icon="🔊️",
         layout="wide",
         initial_sidebar_state="expanded"

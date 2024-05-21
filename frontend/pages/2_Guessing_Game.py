@@ -1,8 +1,9 @@
 import streamlit as st
 from PIL import Image
+from streamlit_image_select import image_select
 
 st.set_page_config(
-page_title="Guessing Game",
+page_title="Endevina l'animal",
 page_icon="🔮️",
 layout="wide",
 initial_sidebar_state="expanded",
@@ -41,6 +42,18 @@ def main():
     st.image("frontend/GUI/TitolJoc2.png", use_column_width=True)
 
     st.write("En aquest joc hauràs d'endevinar quin animal està sonant.")
+    st.image("frontend/GUI/AudioExemple.png", use_column_width=True)
+
+    images = [
+        "frontend/GUI/ImatgeMono.png",
+        "frontend/GUI/ImatgeOvella.png",
+        "frontend/GUI/ImatgeLleo.png",
+        "frontend/GUI/ImatgePorc.png",
+    ]
+    captions = ["Mono", "Ovella", "Lleó", "Porc"]
+
+    # Seleccionar animal
+    img_index_aux = image_select(label="", images=images, captions=captions)
 
 
 if __name__ == "__main__":

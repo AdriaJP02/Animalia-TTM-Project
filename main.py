@@ -39,7 +39,7 @@ def main():
 
     # Frontend
     #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
-    # subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
+ 	#subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
 
 if __name__ == "__main__":
     main()
