@@ -24,8 +24,8 @@ def main():
     #create_dataset()
 
     # Feature analysis
-    # Check if the features file already exists
-    if os.path.exists('feature_analysis/features_dict.joblib'):
+    update = True
+    if os.path.exists('feature_analysis/features_dict.joblib') and !update:
         # If the features file exists, load it
         features_extracted = load('feature_analysis/features_dict.joblib')
     else:

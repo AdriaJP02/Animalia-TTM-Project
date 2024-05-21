@@ -85,7 +85,7 @@ def preprocess_data(animal_files,fs,windowSize,hopSize,NRG_threshold_ratio):
         os.makedirs('plot_animal_sounds')
 
     num_animals = len(animal_files.keys())
-   
+
     #plt.figure(1, figsize=(5 * num_animals, 3))
     file_ind_inlist = 0  # 0: let's take the first file in the list for sample plots
     for i, animal in enumerate(animal_files.keys()):
@@ -176,17 +176,16 @@ def extract_features(segment_files):
     return features_dict  # Return the dictionary with the features
 
 
-def feature_analysis(links, update = False):
+def feature_analysis(links ):
     print("Init Feature analysis...\n")
 
     main_data_dir = "tests" if "test" in links else "animals"
-    
-    if (not os.path.exists("animals")) or update:
-        links = links
-        print("Dataset Links Loaded.\n")
 
-        load_data(main_data_dir,links)
-        print("Data Loaded.")
+
+    links = links
+    print("Dataset Links Loaded.\n")
+    load_data(main_data_dir,links)
+    print("Data Loaded.")
 
 
 
@@ -205,5 +204,3 @@ def feature_analysis(links, update = False):
     print("Features Analysis finished.\n")
 
     return features_dict
-
-
