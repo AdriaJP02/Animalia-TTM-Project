@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
+import pickle
 
 
 #Create the labels from the name audios stored in features_dict
@@ -29,6 +30,15 @@ def extract_labels_animals(features_extracted):
         elif animal_name == f"{dir_animal}inek":
             labels_animals.append(3)
             print("LABEL 3")
+        elif animal_name == f"{dir_animal}maymun":
+            labels_animals.append(4)
+            print("LABEL 4")
+        elif animal_name == f"{dir_animal}tavuk":
+            labels_animals.append(5)
+            print("LABEL 5")
+        elif animal_name == f"{dir_animal}koyun":
+            labels_animals.append(6)
+            print("LABEL 6")
 
     print("TOTAL LABELS: ",labels_animals)
     return labels_animals
@@ -69,6 +79,12 @@ def classifier_RF(X_train, X_test, y_train, y_test, n_estimators):
 
     # Train the classifier
     rf.fit(X_train, y_train)
+
+    # Save the model to disk
+    filename = 'machinelearning_models/FinalRF_model.sav'
+    pickle.dump(rf, open(filename, 'wb'))
+
+    print("RF model saved.")
 
     # Predict labels for the test set
     y_pred = rf.predict(X_test)

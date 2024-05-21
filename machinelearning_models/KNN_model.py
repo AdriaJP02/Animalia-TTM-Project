@@ -30,6 +30,15 @@ def extract_labels_animals(features_extracted):
         elif animal_name == f"{dir_animal}inek":
             labels_animals.append(3)
             print("LABEL 3")
+        elif animal_name == f"{dir_animal}maymun":
+            labels_animals.append(4)
+            print("LABEL 4")
+        elif animal_name == f"{dir_animal}tavuk":
+            labels_animals.append(5)
+            print("LABEL 5")
+        elif animal_name == f"{dir_animal}koyun":
+            labels_animals.append(6)
+            print("LABEL 6")
 
     print("TOTAL LABELS: ",labels_animals)
     return labels_animals

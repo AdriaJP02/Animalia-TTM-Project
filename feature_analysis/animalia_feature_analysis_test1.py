@@ -144,32 +144,25 @@ def split_file(filename, params):
     stop_indexes = np.nonzero(diff_split_decision < 0)[0] * hopSize
     return (x, NRG, split_decision_func, start_indexes, stop_indexes)
 
-
-"""Let's visualize three files per instrument to check if the splits look fine."""
-
-num_instruments = len(inst_files.keys())
-print("Sample plots for waveform versus energy and splits based on energy threshold")
-
-segments_dir = os.path.join(main_data_dir,'segments')
-def create_segments_dir(segments_dir):
+def create_segments_dir(segments_dir,animal_files,params):
     if not os.path.exists(segments_dir):#creating the directory
         os.mkdir(segments_dir)
 
     segment_files = []
-    for instrument, files in inst_files.items():
+    for animal, files in animal_files.items():
         file_count = 0
         for sample_file in files:
             x = ess.MonoLoader(filename = sample_file, sampleRate = fs)()
             (x, NRG, split_decision_func, start_indexes, stop_indexes) = split_file(sample_file, params)
             #Croping segments
             for start, stop in zip(start_indexes, stop_indexes):
-                if stop - start > fs/3:#let's only keep segments larger than 1/3 second
+                if stop - start > fs/5:#let's only keep segments larger than 1/5 second
                     x_seg = x[start: stop]
                     #Final check for amplitude (to avoid silent segments selection due to noise in split function)
-                    if(np.max(np.abs(x_seg)) > 0.05):
+                    if(np.max(np.abs(x_seg)) > 0.03):
                         #Amplitude normalisation
                         x_seg = x_seg / np.max(np.abs(x_seg))
-                        filename = os.path.join(segments_dir, instrument + '_' + str(file_count) + '.wav')
+                        filename = os.path.join(segments_dir, animal + '_' + str(file_count) + '.wav')
                         ess.MonoWriter(filename = filename, format = 'wav', sampleRate = fs)(x_seg)
                         file_count +=1
                         segment_files.append(filename)

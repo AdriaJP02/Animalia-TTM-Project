@@ -34,13 +34,6 @@ NRG_threshold_ratio = 0.05
 segments_dir = os.path.join(main_data_dir,'segments')
 
 #https://sites.google.com/site/gdocs2direct/
-def dataset_files():
-    links = {'dog': 'https://drive.google.com/uc?export=download&id=1pNloKXlqHeu7SBNWTdQq3uNli4P8Io7q',
-             'cat': 'https://drive.google.com/uc?export=download&id=1hlTTbC030SSFZ6Z3X38t43kjylAT5PFk',
-             'Kus': 'https://drive.google.com/uc?export=download&id=1krCt4AnNB0lD9IyYU5oYX-4_jNEJsFa3',
-             'inek': 'https://drive.google.com/uc?export=download&id=1Z0fK-A5X04VkkLxPh0nzrbOD-YlHljjW'}
-    return links
-
 
 def load_data(main_data_dir, links, num_files=999):
 
@@ -98,6 +91,8 @@ def preprocess_data(animal_files,fs,windowSize,hopSize,NRG_threshold_ratio):
     for i, animal in enumerate(animal_files.keys()):
         #plt.figure(i, figsize=(5, 3))
         sample_file = animal_files[animal][file_ind_inlist]
+        print("I: ", i),
+        print("ANIMAL: ",animal)
         x = ess.MonoLoader(filename=sample_file, sampleRate=fs)()
 
         #plt.plot(x)
@@ -181,15 +176,19 @@ def extract_features(segment_files):
     return features_dict  # Return the dictionary with the features
 
 
-def feature_analysis(update = False):
+def feature_analysis(links, update = False):
     print("Init Feature analysis...\n")
+
+    main_data_dir = "tests" if "test" in links else "animals"
     
     if (not os.path.exists("animals")) or update:
-        links = dataset_files()
+        links = links
         print("Dataset Links Loaded.\n")
 
         load_data(main_data_dir,links)
         print("Data Loaded.")
+
+
 
     animal_files = create_file_lists(main_data_dir)
 
