@@ -6,41 +6,9 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 import numpy as np
+from machinelearning_models.label_extraction import extract_labels_animals
 
-#Create the labels from the name audios stored in features_dict
-def extract_labels_animals(features_extracted):
-    labels_animals = []
-    dir_animal = "animals/segments/"
 
-    for file in features_extracted.keys():
-        animal_name, _ = file.split('_', 1)
-        animal_name = animal_name.replace(dir_animal, "")
-        print("ANIMAL: ", animal_name)
-
-        if animal_name == "cat":
-            labels_animals.append(0)
-            print("LABEL 0")
-        elif animal_name == "dog":
-            labels_animals.append(1)
-            print("LABEL 1")
-        elif animal_name == "Kus":
-            labels_animals.append(2)
-            print("LABEL 2")
-        elif animal_name == "inek":
-            labels_animals.append(3)
-            print("LABEL 3")
-        elif animal_name == "maymun":
-            labels_animals.append(4)
-            print("LABEL 4")
-        elif animal_name == "tavuk":
-            labels_animals.append(5)
-            print("LABEL 5")
-        elif animal_name == "koyun":
-            labels_animals.append(6)
-            print("LABEL 6")
-
-    print("TOTAL LABELS: ", labels_animals)
-    return labels_animals
 
 def prepare_features_animals(features_extracted):
     prepared_features = []
@@ -100,7 +68,7 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
 
 def create_SVM(features_extracted):
     print("Creating SVM model...")
-    labels = extract_labels_animals(features_extracted)
+    labels, _ = extract_labels_animals(features_extracted)
     features_animals_prepared = prepare_features_animals(features_extracted)
     labels_animals_prepared = np.array(labels)
     X_train, X_test, y_train, y_test = split_train_test(features_animals_prepared, labels_animals_prepared)

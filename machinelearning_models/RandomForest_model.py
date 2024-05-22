@@ -5,43 +5,10 @@ from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 import pickle
 
+from machinelearning_models.label_extraction import extract_labels_animals
 
 #Create the labels from the name audios stored in features_dict
-def extract_labels_animals(features_extracted):
-    labels_animals = []
 
-    for file in features_extracted.keys():
-
-        animal_name, _ = file.split('_', 1)
-
-        dir_animal = "animals/segments/"
-
-        print("ANIMAL: ",animal_name)
-
-        if animal_name == f"{dir_animal}cat":
-            labels_animals.append(0)
-            print("LABEL 0")
-        elif animal_name == f"{dir_animal}dog":
-            labels_animals.append(1)
-            print("LABEL 1")
-        elif animal_name == f"{dir_animal}Kus":
-            labels_animals.append(2)
-            print("LABEL 2")
-        elif animal_name == f"{dir_animal}inek":
-            labels_animals.append(3)
-            print("LABEL 3")
-        elif animal_name == f"{dir_animal}maymun":
-            labels_animals.append(4)
-            print("LABEL 4")
-        elif animal_name == f"{dir_animal}tavuk":
-            labels_animals.append(5)
-            print("LABEL 5")
-        elif animal_name == f"{dir_animal}koyun":
-            labels_animals.append(6)
-            print("LABEL 6")
-
-    print("TOTAL LABELS: ",labels_animals)
-    return labels_animals
 
 def prepare_features_animals(features_extracted):
     prepared_features = []
@@ -95,14 +62,14 @@ def classifier_RF(X_train, X_test, y_train, y_test, n_estimators):
 def create_RF(features_extracted):
     print("Creating RF model...")
 
-    labels = extract_labels_animals(features_extracted)
+    labels, _ = extract_labels_animals(features_extracted)
 
     features_animals_prepared = prepare_features_animals(features_extracted)
     labels_animals_prepared = np.array(labels)
 
     X_train, X_test, y_train, y_test = split_train_test(features_animals_prepared, labels_animals_prepared)
 
-    n_estimators = 100 # change to modify final accuracy
+    n_estimators = 1000 # change to modify final accuracy
 
     y_pred = classifier_RF(X_train, X_test, y_train, y_test, n_estimators)
 
@@ -111,12 +78,12 @@ def create_RF(features_extracted):
 
     print(classification_report(y_test, y_pred))
 
-    print("-"*200)
+    print("-"*100)
     # Print confusion matrix classifier RF
     print("RF Confusion Matrix for number of estimators: ", n_estimators)
 
     print(confusion_matrix(y_test, y_pred))
 
-    print("-" * 200)
+    print("-" * 100)
 
     return 0
