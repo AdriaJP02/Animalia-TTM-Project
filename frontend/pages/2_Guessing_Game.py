@@ -42,7 +42,7 @@ def main():
     st.image("frontend/GUI/TitolJoc2.png", use_column_width=True)
 
     st.write("En aquest joc hauràs d'endevinar quin animal està sonant.")
-    st.image("frontend/GUI/AudioExemple.png", use_column_width=True)
+    st.image("frontend/GUI/AudioExemple.PNG", use_column_width=True)
 
     images = [
         "frontend/GUI/ImatgeMono.png",

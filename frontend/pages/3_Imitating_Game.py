@@ -1,6 +1,9 @@
 import streamlit as st
 from PIL import Image
 from st_audiorec import st_audiorec
+#import tempfile
+#import soundfile as sf
+import os
 
 
 st.set_page_config(
@@ -88,7 +91,12 @@ def imitating_game():
 
     if wav_audio_data is not None:
         # output of percentages in animals
-        st.image("frontend/GUI/PercentatgesAnimals.png", use_column_width=True)
+        st.image("frontend/GUI/PercentatgesAnimals.PNG", use_column_width=True)
+        # Save the audio file
+        save_path = 'frontend/temp_audios/TemporalAudio.wav'  # Change this to your desired path
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        with open(save_path, 'wb') as f:
+            f.write(wav_audio_data)
         # display audio data as received on the Python side
         col_playback, col_space = st.columns([0.58,0.42])
         with col_playback:
