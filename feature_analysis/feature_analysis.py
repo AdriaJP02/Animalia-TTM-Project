@@ -176,19 +176,30 @@ def extract_features(segment_files):
     return features_dict  # Return the dictionary with the features
 
 
-def feature_analysis(links ):
+def feature_analysis(links):
     print("Init Feature analysis...\n")
 
     main_data_dir = "tests" if "test" in links else "animals"
 
+    if (not os.path.exists(main_data_dir)):
+        print("Dataset Links Loaded.\n")
+        print(links)
+        for key, link in links.items():
+            # Get the file extension
+            _, file_extension = os.path.splitext(link)
 
-    links = links
-    print("Dataset Links Loaded.\n")
-    load_data(main_data_dir,links)
-    print("Data Loaded.")
+            if file_extension in ['.wav', '.aiff']:  # if the links are wav or aiff extract the compressed audios
+                main_data_dir = "test"
 
+                print(f"Data audio for {key} Loaded.")
 
+            else:  # if the link is not an audio
+                main_data_dir = "animals"
+                load_data(main_data_dir, links)
+                print(f"Data zip for {key} Loaded.")
+                break
 
+    segments_dir = os.path.join(main_data_dir, 'segments')
     animal_files = create_file_lists(main_data_dir)
 
 

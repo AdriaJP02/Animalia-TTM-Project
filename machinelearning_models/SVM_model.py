@@ -6,6 +6,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 import numpy as np
+import pickle
 
 #Create the labels from the name audios stored in features_dict
 def extract_labels_animals(features_extracted):
@@ -38,6 +39,9 @@ def extract_labels_animals(features_extracted):
         elif animal_name == "koyun":
             labels_animals.append(6)
             print("LABEL 6")
+        elif animal_name == "aslan":
+            labels_animals.append(7)
+            print("LABEL 7")
 
     print("TOTAL LABELS: ", labels_animals)
     return labels_animals
@@ -92,6 +96,12 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
 
     # Print the best parameters found by GridSearchCV
     print("Best parameters: ", grid_search.best_params_)
+
+    # Save the model to disk
+    filename = 'machinelearning_models/FinalSVM_model.sav'
+    pickle.dump(svm, open(filename, 'wb'))
+
+    print("SVM model saved.")
 
     # Predict the labels for the test set
     y_pred = grid_search.predict(X_test)
