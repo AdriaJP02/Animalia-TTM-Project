@@ -14,6 +14,7 @@ import urllib.request
 import zipfile
 import os, sys, shutil
 from sklearn import preprocessing
+import shutil
 
 # III. Data Analysis
 import pandas as pd
@@ -189,7 +190,13 @@ def feature_analysis(links):
             _, file_extension = os.path.splitext(link)
 
             if file_extension in ['.wav', '.aiff']:  # if the links are wav or aiff extract the compressed audios
-                main_data_dir = "test"
+                main_data_dir = "tests"
+                if not os.path.exists(main_data_dir):  # creating the directory if not exist
+                    os.mkdir(main_data_dir)
+
+                # Mover el archivo de audio a la nueva carpeta
+                destination = os.path.join(main_data_dir, os.path.basename(link))
+                shutil.move(link, destination)
 
                 print(f"Data audio for {key} Loaded.")
 
@@ -200,6 +207,8 @@ def feature_analysis(links):
                 break
 
     segments_dir = os.path.join(main_data_dir, 'segments')
+    print(segments_dir)
+
     animal_files = create_file_lists(main_data_dir)
 
 
@@ -209,7 +218,7 @@ def feature_analysis(links):
     num_animals = len(animal_files.keys())
     segment_files = create_segments_dir(segments_dir,animal_files, params)
     print(len(segment_files), 'Total animal segment files created.\n')
-
+    print(segment_files)
     features_dict = extract_features(segment_files)
 
     print("Features Analysis finished.\n")

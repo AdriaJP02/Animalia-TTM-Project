@@ -1,10 +1,8 @@
 import pickle
 import numpy as np
-import tempfile
-import soundfile as sf
 from feature_analysis.feature_analysis import feature_analysis
 from machinelearning_models.RandomForest_model import prepare_features_animals
-import librosa
+import shutil
 
 # Load the model from disk: Random Forest
 filenameRF = 'machinelearning_models/FinalRF_model.sav'
@@ -18,18 +16,18 @@ loaded_modelSVM = pickle.load(open(filenameRF, 'rb'))
 #link = {"test":"https://drive.google.com/uc?export=download&id=1iwh34dXFOm7m0hxFcA58TVxPAzt7cw7a"}
 
 # Crear un archivo temporal
-temp_file = tempfile.NamedTemporaryFile(delete=True)
+temp_file_route = 'frontend/temp_audios/TemporalAudio.wav'  # Change this to your desired test path
 
 # Guardar los datos de audio en el archivo temporal
-wav_audio_data = 0
-sf.write(temp_file.name, wav_audio_data, 44100)  # asumiendo una frecuencia de muestreo de 44100 Hz
+#wav_audio_data = 0
+#sf.write(temp_file.name, wav_audio_data, 44100)  # asumiendo una frecuencia de muestreo de 44100 Hz
 
 
 # Define the path to the .wav file
 #audio = "test/Voz-020.wav" #cow
 #audio = "test/Voz-023.wav" #cat
-audio = "test/Voz-024.wav"  #cat better
-link = {"test": f"{audio}"}
+#audio = "test/Voz-024.wav"  #cat better
+link = {"test": f"{temp_file_route}"}
 
 
 # Load the .wav file
@@ -95,3 +93,6 @@ for i, single_audio_features in enumerate(new_audio_features):
         # Get the probability of the class
         probability = top3_probabilities[j]
         print(f"{j + 1}. {predicted_animal} (probability: {probability})")
+
+#Remove all stored files to keep privacy
+shutil.rmtree('tests')
