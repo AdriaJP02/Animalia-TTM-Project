@@ -4,7 +4,7 @@ import numpy as np
 
 import tensorflow as tf
 
-import essentia.standard as es
+
 from collections import Counter
 
 import matplotlib.pyplot as plt

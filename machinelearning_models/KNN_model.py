@@ -7,41 +7,7 @@ import numpy as np
 
 
 #Create the labels from the name audios stored in features_dict
-def extract_labels_animals(features_extracted):
-    labels_animals = []
 
-    for file in features_extracted.keys():
-
-        animal_name, _ = file.split('_', 1)
-
-        dir_animal = "animals/segments/"
-
-        print("ANIMAL: ",animal_name)
-
-        if animal_name == f"{dir_animal}cat":
-            labels_animals.append(0)
-            print("LABEL 0")
-        elif animal_name == f"{dir_animal}dog":
-            labels_animals.append(1)
-            print("LABEL 1")
-        elif animal_name == f"{dir_animal}Kus":
-            labels_animals.append(2)
-            print("LABEL 2")
-        elif animal_name == f"{dir_animal}inek":
-            labels_animals.append(3)
-            print("LABEL 3")
-        elif animal_name == f"{dir_animal}maymun":
-            labels_animals.append(4)
-            print("LABEL 4")
-        elif animal_name == f"{dir_animal}tavuk":
-            labels_animals.append(5)
-            print("LABEL 5")
-        elif animal_name == f"{dir_animal}koyun":
-            labels_animals.append(6)
-            print("LABEL 6")
-
-    print("TOTAL LABELS: ",labels_animals)
-    return labels_animals
 
 def prepare_features_animals(features_extracted):
     prepared_features = []
@@ -90,7 +56,7 @@ def classifier_KNN( X_train, X_test, y_train, y_test, n_neighbors):
 def create_KNN(features_extracted):
     print("Creating KNN model...")
 
-    labels = extract_labels_animals(features_extracted)
+    labels, _ = extract_labels_animals(features_extracted)
 
     features_animals_prepared = prepare_features_animals(features_extracted)
     labels_animals_prepared = np.array(labels)

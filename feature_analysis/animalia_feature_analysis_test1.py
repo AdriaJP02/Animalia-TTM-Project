@@ -212,12 +212,3 @@ def extract_features():
 
 # Call the function
 extract_features()
-
-
-
-
-
-
-
-
-
