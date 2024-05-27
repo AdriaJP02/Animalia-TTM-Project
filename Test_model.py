@@ -4,95 +4,148 @@ from feature_analysis.feature_analysis import feature_analysis
 from machinelearning_models.RandomForest_model import prepare_features_animals
 import shutil
 
-# Load the model from disk: Random Forest
-filenameRF = 'machinelearning_models/FinalRF_model.sav'
-loaded_modelRF = pickle.load(open(filenameRF, 'rb'))
+# Initialize the variables to default values
+top3_probabilities_rf = top3_probabilities_svm = None
 
-# Load the model from disk: SVM
-filenameSVM = 'machinelearning_models/FinalSVM_model.sav'
-loaded_modelSVM = pickle.load(open(filenameRF, 'rb'))
-
-#Test1_Imitating: dog, sheep, cow
-#link = {"test":"https://drive.google.com/uc?export=download&id=1iwh34dXFOm7m0hxFcA58TVxPAzt7cw7a"}
-
-# Crear un archivo temporal
-temp_file_route = 'frontend/temp_audios/TemporalAudio.wav'  # Change this to your desired test path
-
-# Guardar los datos de audio en el archivo temporal
-#wav_audio_data = 0
-#sf.write(temp_file.name, wav_audio_data, 44100)  # asumiendo una frecuencia de muestreo de 44100 Hz
+# Initialize the result lists
+results_rf = []
+results_svm = []
 
 
-# Define the path to the .wav file
-#audio = "test/Voz-020.wav" #cow
-#audio = "test/Voz-023.wav" #cat
-#audio = "test/Voz-024.wav"  #cat better
-link = {"test": f"{temp_file_route}"}
-
-
-# Load the .wav file
-#test, sr = librosa.load(link, sr=None)
-print("TEST: ", link)
-new_audio_features = feature_analysis(link)
-new_audio_features = prepare_features_animals(new_audio_features)
-
+#Transofrm the label number to animal
 label_to_animal = {
-    0: "cat",
-    1: "dog",
-    2: "bird",
-    3: "cow",
-    4: "monkey",
-    5: "chicken",
-    6: "sheep",
-    7: "lion"
-}
+        0: "cat",
+        1: "dog",
+        2: "bird",
+        3: "cow",
+        4: "monkey",
+        5: "chicken",
+        6: "sheep",
+        7: "lion"
+    }
 
-# Iterate over each feature vector in new_audio_features
-print("RF model: \n")
-for i, single_audio_features in enumerate(new_audio_features):
-    # Convert the list of features to a numpy array
-    single_audio_features_np = np.array(single_audio_features)
-    # Reshape the numpy array as necessary
-    single_audio_features_np = single_audio_features_np.reshape(1, -1)
+# Initialize dictionaries to store total probabilities and counts
+total_probabilities_rf = {animal: 0 for animal in label_to_animal.values()}
+total_counts_rf = {animal: 0 for animal in label_to_animal.values()}
 
-    # Get the probabilities for each class
-    probabilities = loaded_modelRF.predict_proba(single_audio_features_np)[0]
+total_probabilities_svm = {animal: 0 for animal in label_to_animal.values()}
+total_counts_svm = {animal: 0 for animal in label_to_animal.values()}
 
-    # Get the indices of the top 3 classes with highest probability
-    top3_indices = np.argsort(probabilities)[-3:][::-1]
-    # Get the probabilities of the top 3 classes
-    top3_probabilities = probabilities[top3_indices]
 
-    # Print the top 3 classes with highest probability and their respective probabilities
-    print(f"Top 3 predicted animals for audio {i + 1} using RF: ")
-    for j in range(3):
-        # Get the animal name corresponding to the class label
-        predicted_animal = label_to_animal[top3_indices[j]]
-        # Get the probability of the class
-        probability = top3_probabilities[j]
-        print(f"{j + 1}. {predicted_animal} (probability: {probability})")
 
-print("\nSVM model: \n")
-for i, single_audio_features in enumerate(new_audio_features):
-    single_audio_features_np = np.array(single_audio_features)
-    single_audio_features_np = single_audio_features_np.reshape(1, -1)  # reshape if necessary
+def imitating_animal(save_path):
 
-    # Get the probabilities for each class
-    probabilities = loaded_modelSVM.predict_proba(single_audio_features_np)[0]
+    # Load the model from disk: Random Forest
+    filenameRF = 'machinelearning_models/FinalRF_model.sav'
+    loaded_modelRF = pickle.load(open(filenameRF, 'rb'))
 
-    # Get the indices of the top 3 classes with highest probability
-    top3_indices = np.argsort(probabilities)[-3:][::-1]
-    # Get the probabilities of the top 3 classes
-    top3_probabilities = probabilities[top3_indices]
+    # Load the model from disk: SVM
+    filenameSVM = 'machinelearning_models/FinalSVM_model.sav'
+    loaded_modelSVM = pickle.load(open(filenameRF, 'rb'))
 
-    # Print the top 3 classes with highest probability and their respective probabilities
-    print(f"Top 3 predicted animals for audio {i + 1} using SVM: ")
-    for j in range(3):
-        # Get the animal name corresponding to the class label
-        predicted_animal = label_to_animal[top3_indices[j]]
-        # Get the probability of the class
-        probability = top3_probabilities[j]
-        print(f"{j + 1}. {predicted_animal} (probability: {probability})")
+    #Test1_Imitating: dog, sheep, cow
+    #link = {"test":"https://drive.google.com/uc?export=download&id=1iwh34dXFOm7m0hxFcA58TVxPAzt7cw7a"}
 
-#Remove all stored files to keep privacy
-shutil.rmtree('tests')
+    # Crear un archivo temporal
+    temp_file_route = save_path  # Change this to your desired test path
+
+    # Guardar los datos de audio en el archivo temporal
+    #wav_audio_data = 0
+    #sf.write(temp_file.name, wav_audio_data, 44100)  # asumiendo una frecuencia de muestreo de 44100 Hz
+
+
+    # Define the path to the .wav file
+    #audio = "test/Voz-020.wav" #cow
+    #audio = "test/Voz-023.wav" #cat
+    #audio = "test/Voz-024.wav"  #cat better
+    link = {"test": f"{temp_file_route}"}
+
+
+    # Load the .wav file
+    #test, sr = librosa.load(link, sr=None)
+    print("TEST: ", link)
+    new_audio_features = feature_analysis(link)
+    new_audio_features = prepare_features_animals(new_audio_features)
+
+
+
+    # Iterate over each feature vector in new_audio_features
+    #RF model
+    for i, single_audio_features in enumerate(new_audio_features):
+        # Convert the list of features to a numpy array
+        single_audio_features_np = np.array(single_audio_features)
+        # Reshape the numpy array as necessary
+        single_audio_features_np = single_audio_features_np.reshape(1, -1)
+
+        # Get the probabilities for each class
+        probabilities = loaded_modelRF.predict_proba(single_audio_features_np)[0]
+
+        # Get the indices of the top 3 classes with highest probability
+        top3_indices_rf = np.argsort(probabilities)[-3:][::-1]
+        # Get the probabilities of the top 3 classes
+        top3_probabilities_rf = probabilities[top3_indices_rf]
+
+        for j in range(3):
+            # Get the animal name corresponding to the class label
+            predicted_animal_rf = label_to_animal[top3_indices_rf[j]]
+            # Get the probability of the class
+            probability_rf = top3_probabilities_rf[j]
+
+            # Add the probability to the total and increment the count
+            total_probabilities_rf[predicted_animal_rf] += probability_rf
+            total_counts_rf[predicted_animal_rf] += 1
+
+    #SVM model
+    for i, single_audio_features in enumerate(new_audio_features):
+        single_audio_features_np = np.array(single_audio_features)
+        single_audio_features_np = single_audio_features_np.reshape(1, -1)  # reshape if necessary
+
+        # Get the probabilities for each class
+        probabilities = loaded_modelSVM.predict_proba(single_audio_features_np)[0]
+
+        # Get the indices of the top 3 classes with highest probability
+        top3_indices_svm = np.argsort(probabilities)[-3:][::-1]
+        # Get the probabilities of the top 3 classes
+        top3_probabilities_svm = probabilities[top3_indices_svm]
+
+        print(f"SVM probabilites Segmentations {i+1}:")
+        for j in range(3):
+            # Get the animal name corresponding to the class label
+            predicted_animal_svm = label_to_animal[top3_indices_svm[j]]
+            # Get the probability of the class
+            probability_svm = top3_probabilities_svm[j]
+            print(f"{j + 1}. {predicted_animal_svm} (probability: {probability_svm})")
+
+
+            # Add the probability to the total and increment the count
+            total_probabilities_svm[predicted_animal_svm] += probability_svm
+            total_counts_svm[predicted_animal_svm] += 1
+
+    average_probabilities_rf = {animal: total_probabilities_rf[animal] / total_counts_rf[animal]
+                                for animal in total_probabilities_rf if total_counts_rf[animal] > 0}
+
+    average_probabilities_svm = {animal: total_probabilities_svm[animal] / total_counts_svm[animal]
+                                 for animal in total_probabilities_svm if total_counts_svm[animal] > 0}
+
+    print("\nRF results:", average_probabilities_rf)
+    print("SVM results:", average_probabilities_svm)
+
+    # Ordenar los resultados por probabilidad (de mayor a menor)
+    sorted_results_rf = sorted(average_probabilities_rf.items(), key=lambda item: item[1], reverse=True)
+    sorted_results_svm = sorted(average_probabilities_svm.items(), key=lambda item: item[1], reverse=True)
+
+    # Extraer solo las etiquetas de los animales
+    animal_labels_rf = [animal for animal, probability in sorted_results_rf]
+    animal_labels_svm = [animal for animal, probability in sorted_results_svm]
+
+    print("Final results RF: ", animal_labels_rf)
+    #Remove all stored files to keep privacy
+    shutil.rmtree('tests')
+
+    #return animal_labels_rf, animal_labels_svm
+    return animal_labels_svm
+
+test_path = 'frontend/temp_audios/TemporalAudio.wav'
+results_svm = imitating_animal(test_path)
+
+print("Final results SVM passed: ", results_svm)

@@ -1,7 +1,19 @@
 import streamlit as st
 from PIL import Image
 from st_audiorec import st_audiorec
+from Test_model import imitating_animal
 import os
+
+label_to_animal = {
+        0: "cat",
+        1: "dog",
+        2: "bird",
+        3: "cow",
+        4: "monkey",
+        5: "chicken",
+        6: "sheep",
+        7: "lion"
+    }
 
 st.set_page_config(
     page_title="Imita animals",
@@ -52,8 +64,8 @@ def translate_animal_name(animal):
     }
     return translations.get(animal, "Unknown")
 
-def display_corresponding_images():
-    animals = correspondingAnimals()
+def display_corresponding_images(predicted_animals):
+    animals = predicted_animals
     image_paths = [f"frontend/GUI/Imatge{translate_animal_name(animal)}.png" for animal in animals]
 
     # Define sizes for the images
@@ -128,6 +140,8 @@ def imitating_game():
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
         with open(save_path, 'wb') as f:
             f.write(wav_audio_data)
+        predicted_animals = imitating_animal(save_path)
+
         # display audio data as received on the Python side
         col_playback, col_space = st.columns([0.58,0.42])
         with col_playback:
@@ -135,7 +149,7 @@ def imitating_game():
         #st.image("frontend/GUI/PercentatgesAnimals.PNG", use_column_width=True)
 
         # Display the corresponding images
-        display_corresponding_images()
+        display_corresponding_images(predicted_animals)
 
 if __name__ == "__main__":
     imitating_game()

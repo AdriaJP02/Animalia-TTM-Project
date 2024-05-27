@@ -36,11 +36,11 @@ def main():
         dump(features_extracted, 'feature_analysis/features_dict.joblib')
 
     # Run machine learning models
-    run_machinelearningmodels(features_extracted)
+    #run_machinelearningmodels(features_extracted)
 
     # Frontend
     #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
- 	#subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
+    subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
 
 if __name__ == "__main__":
     main()
