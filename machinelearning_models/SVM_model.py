@@ -81,10 +81,12 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
 
     # Create the parameter grid for GridSearchCV
     param_grid = {
-        'C': [0.1, 1, 10, 100],
-        'gamma': ['scale', 'auto'],
+        'C': [100],
+        'gamma': [ 0.001],
         'kernel': ['rbf'],
-        'max_iter': [5000, 10000, 50000]  # Increased max_iter
+        'degree': [2],  # Relevant for 'poly' kernel
+        'coef0': [0.0],  # Relevant for 'poly' and 'sigmoid' kernels
+        'max_iter': [5000]
     }
 
     # Create the GridSearchCV object
@@ -98,12 +100,20 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
     # Print the best parameters found by GridSearchCV
     print("Best parameters: ", grid_search.best_params_)
 
+    # Print detailed results
+    print("Grid search results:")
+    means = grid_search.cv_results_['mean_test_score']
+    stds = grid_search.cv_results_['std_test_score']
+    params = grid_search.cv_results_['params']
+    for mean, std, param in zip(means, stds, params):
+        print(f"Mean: {mean:.3f}, Std: {std:.3f}, Params: {param}")
+
     # Save the model to disk
     filename = 'machinelearning_models/FinalSVM_model.sav'
-    pickle.dump(svm, open(filename, 'wb'))
+    pickle.dump(grid_search.best_estimator_, open(filename, 'wb'))
 
     print("SVM model saved.")
-
+    print("Best parameters: ", grid_search.best_params_)
     # Predict the labels for the test set
     y_pred = grid_search.predict(X_test)
 
