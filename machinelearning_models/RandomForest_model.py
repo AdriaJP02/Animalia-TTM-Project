@@ -4,6 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
 import pickle
+from machinelearning_models.label_extraction import extract_labels_animals_new
 
 
 #Create the labels from the name audios stored in features_dict
@@ -96,7 +97,7 @@ def classifier_RF(X_train, X_test, y_train, y_test, n_estimators):
 def create_RF(features_extracted):
     print("Creating RF model...")
 
-    labels = extract_labels_animals(features_extracted)
+    labels, _  = extract_labels_animals_new(features_extracted)
 
     features_animals_prepared = prepare_features_animals(features_extracted)
     labels_animals_prepared = np.array(labels)

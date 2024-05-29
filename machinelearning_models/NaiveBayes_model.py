@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
-
+from machinelearning_models.label_extraction import extract_labels_animals_new
 
 #Create the labels from the name audios stored in features_dict
 def extract_labels_animals(features_extracted):
@@ -89,7 +89,7 @@ def classifier_NB(X_train, X_test, y_train, y_test):
 def create_NB(features_extracted):
     print("Creating Naive Bayes model...")
 
-    labels = extract_labels_animals(features_extracted)
+    labels, _ = extract_labels_animals_new(features_extracted)
 
     features_animals_prepared = prepare_features_animals(features_extracted)
     #features_animals_prepared = features_extracted
@@ -111,4 +111,3 @@ def create_NB(features_extracted):
     print("-" * 200)
 
     return 0
-

@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 import numpy as np
 import pickle
+from machinelearning_models.label_extraction import extract_labels_animals_new
 
 #Create the labels from the name audios stored in features_dict
 def extract_labels_animals(features_extracted):
@@ -110,7 +111,7 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
 
 def create_SVM(features_extracted):
     print("Creating SVM model...")
-    labels = extract_labels_animals(features_extracted)
+    labels, _  = extract_labels_animals_new(features_extracted)
     features_animals_prepared = prepare_features_animals(features_extracted)
     labels_animals_prepared = np.array(labels)
     X_train, X_test, y_train, y_test = split_train_test(features_animals_prepared, labels_animals_prepared)

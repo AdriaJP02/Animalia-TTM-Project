@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
+from machinelearning_models.label_extraction import extract_labels_animals_new
 
 
 #Create the labels from the name audios stored in features_dict
@@ -90,7 +91,7 @@ def classifier_KNN( X_train, X_test, y_train, y_test, n_neighbors):
 def create_KNN(features_extracted):
     print("Creating KNN model...")
 
-    labels = extract_labels_animals(features_extracted)
+    labels, _ = extract_labels_animals_new(features_extracted)
 
     features_animals_prepared = prepare_features_animals(features_extracted)
     labels_animals_prepared = np.array(labels)
