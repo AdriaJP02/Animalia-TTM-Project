@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image
 from st_audiorec import st_audiorec
-from Test_model import imitating_animal
+from main_imitating import imitating_animal
 import os
 
 label_to_animal = {

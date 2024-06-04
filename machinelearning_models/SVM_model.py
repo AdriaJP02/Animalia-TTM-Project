@@ -76,27 +76,14 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
     X_train = pca.fit_transform(X_train)
     X_test = pca.transform(X_test)
 
-    # Create a SVM classifier with RBF kernel
-    svm = SVC(class_weight='balanced', verbose=1)
-
-    # Create the parameter grid for GridSearchCV
-    param_grid = {
-        'C': [0.1, 1, 10, 100],
-        'gamma': ['scale', 'auto'],
-        'kernel': ['rbf'],
-        'max_iter': [5000, 10000, 50000]  # Increased max_iter
-    }
-
-    # Create the GridSearchCV object
-    grid_search = GridSearchCV(svm, param_grid, cv=5, verbose=3)
+    # Create a SVM classifier with RBF kernel using the best parameters
+    svm = SVC(C=100, coef0=0.0, degree=2, gamma=0.001,
+    kernel='rbf', max_iter=5000, class_weight='balanced', verbose=1)
 
     # Train the classifier
     print("Training with PCA...")
-    grid_search.fit(X_train, y_train)
+    svm.fit(X_train, y_train)
     print("Training completed")
-
-    # Print the best parameters found by GridSearchCV
-    print("Best parameters: ", grid_search.best_params_)
 
     # Save the model to disk
     filename = 'machinelearning_models/FinalSVM_model.sav'
@@ -105,7 +92,7 @@ def classifier_SVM(X_train, X_test, y_train, y_test):
     print("SVM model saved.")
 
     # Predict the labels for the test set
-    y_pred = grid_search.predict(X_test)
+    y_pred = svm.predict(X_test)
 
     return y_pred
 

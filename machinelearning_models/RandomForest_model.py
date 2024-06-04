@@ -74,10 +74,12 @@ def split_train_test(features_animals, labels_animals):
     return  X_train, X_test, y_train, y_test
 
 
-def classifier_RF(X_train, X_test, y_train, y_test, n_estimators):
+def classifier_RF(X_train, X_test, y_train, y_test):
     print("classRF")
-    # Create classifier RF
-    rf = RandomForestClassifier(n_estimators=n_estimators)
+    # Create classifier RF with the best parameters
+    rf = RandomForestClassifier(n_estimators=300, bootstrap=False,
+    max_depth=50, max_features='sqrt', min_samples_leaf=1,
+    min_samples_split=2)
 
     # Train the classifier
     rf.fit(X_train, y_train)
@@ -104,18 +106,16 @@ def create_RF(features_extracted):
 
     X_train, X_test, y_train, y_test = split_train_test(features_animals_prepared, labels_animals_prepared)
 
-    n_estimators = 100 # change to modify final accuracy
-
-    y_pred = classifier_RF(X_train, X_test, y_train, y_test, n_estimators)
+    y_pred = classifier_RF(X_train, X_test, y_train, y_test)
 
     # Print report classifier RF
-    print("RF Classifier Report for number of estimators: ", n_estimators)
+    print("RF Classifier Report")
 
     print(classification_report(y_test, y_pred))
 
     print("-"*200)
     # Print confusion matrix classifier RF
-    print("RF Confusion Matrix for number of estimators: ", n_estimators)
+    print("RF Confusion Matrix")
 
     print(confusion_matrix(y_test, y_pred))
 

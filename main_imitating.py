@@ -127,18 +127,20 @@ def imitating_animal(save_path):
     average_probabilities_svm = {animal: total_probabilities_svm[animal] / total_counts_svm[animal]
                                  for animal in total_probabilities_svm if total_counts_svm[animal] > 0}
 
-    print("\nRF results:", average_probabilities_rf)
-    print("SVM results:", average_probabilities_svm)
 
     # Ordenar los resultados por probabilidad (de mayor a menor)
     sorted_results_rf = sorted(average_probabilities_rf.items(), key=lambda item: item[1], reverse=True)
     sorted_results_svm = sorted(average_probabilities_svm.items(), key=lambda item: item[1], reverse=True)
 
-    # Extraer solo las etiquetas de los animales
-    animal_labels_rf = [animal for animal, probability in sorted_results_rf]
-    animal_labels_svm = [animal for animal, probability in sorted_results_svm]
+    print("\nRF results:", sorted_results_rf)
+    print("SVM results:", sorted_results_svm)
 
-    print("Final results RF: ", animal_labels_rf)
+    # Extraer solo las etiquetas de los animales TOP 3
+    animal_labels_rf = [animal for animal, probability in sorted_results_rf[:3]]
+    animal_labels_svm = [animal for animal, probability in sorted_results_svm[:3]]
+
+    print("Final results RF TOP 3: ", animal_labels_rf)
+
     #Remove all stored files to keep privacy
     shutil.rmtree('tests')
 
@@ -148,4 +150,4 @@ def imitating_animal(save_path):
 test_path = 'frontend/temp_audios/TemporalAudio.wav'
 results_svm = imitating_animal(test_path)
 
-print("Final results SVM passed: ", results_svm)
+print("Final results SVM TOP 3 passed: ", results_svm)
