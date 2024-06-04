@@ -154,27 +154,66 @@ def create_segments_dir(segments_dir,animal_files,params):
                         segment_files.append(filename)
     return segment_files
 
-def extract_features(segment_files):
-    showPossibleFeatures = True
-    features_dict = {}  # Create a dictionary to store the features
-    num_files_extracted = 1 # Number of files to extract features
+def extract_features(segment_files, fs=44100):
 
-    files = segment_files
-    for file in files:
-        # Use FreesoundExtractor
-        extractor = es.FreesoundExtractor(lowlevelSilentFrames='drop',
-                                          lowlevelFrameSize=2048,
-                                          lowlevelHopSize=1024,
-                                          lowlevelStats=['mean', 'stdev'])
-        features, features_frames = extractor(file)
+    features_dict = {}  # Crear un diccionario para almacenar las características
 
-        # Store all lowlevel features in the dictionary
-        features_dict[file] = {feature_name: features[feature_name]
-                               for feature_name in features.descriptorNames()
-                               if 'lowlevel' in feature_name or 'tonal' in feature_name
-                               and isinstance(features[feature_name], numbers.Number)}
+    for file in segment_files:
+        # Usar Essentia para cargar el audio
+        audio = es.MonoLoader(filename=file)()
 
-    return features_dict  # Return the dictionary with the features
+        # Extraer el Centroid Espectral
+        spectral_centroid = es.SpectralCentroidTime()(audio)
+
+        # Extraer la Tasa de Cruces por Cero (ZCR)
+        zcr = es.ZeroCrossingRate()(audio)
+
+        # Extraer la Energía RMS
+        rms_energy = es.RMS()(audio)
+
+        # Calcular el Ancho de Banda Espectral usando CentralMoments
+        central_moments = es.CentralMoments()(audio)
+        spectral_bandwidth = central_moments[1]  # El segundo momento central es el ancho de banda espectral
+
+        # Calcular el Rolloff Espectral manualmente
+        spectrum = np.abs(np.fft.fft(audio))
+        cumulative_energy = np.cumsum(spectrum) / np.sum(spectrum)
+        rolloff_percentile = 0.85  # Ajustar según sea necesario
+        spectral_rolloff_index = np.where(cumulative_energy >= rolloff_percentile)[0][0]
+        spectral_rolloff = spectral_rolloff_index * (fs / len(audio))
+
+        # Extraer MFCCs
+        mfccs = es.MFCC()(audio)[1]  # Solo usar los coeficientes, no la energía
+
+        # Ajustar el tamaño del fotograma para calcular el cromagrama
+        frame_size = 32768
+        hop_size = frame_size // 2  # Saltos de 50%
+        frames = es.FrameGenerator(audio, frameSize=frame_size, hopSize=hop_size, startFromZero=True)
+
+        # Calcular el cromagrama para cada fotograma y promediar los resultados
+        chroma_list = []
+        for frame in frames:
+            chroma = es.Chromagram()(frame)
+            chroma_list.append(chroma)
+        chroma_mean = np.mean(chroma_list, axis=0)
+
+      
+
+
+        # Almacenar las características en el diccionario
+
+        features_dict[file] = {
+            'spectral_centroid': float(spectral_centroid),
+            'zcr': float(zcr),
+            'rms_energy': float(rms_energy),
+            'spectral_bandwidth': float(spectral_bandwidth),
+            'spectral_rolloff': float(spectral_rolloff),
+            'mfccs': mfccs.tolist(),  # Convertir a lista para facilitar el almacenamiento
+            'chroma': chroma.tolist(),  # Convertir a lista para facilitar el almacenamiento
+        }
+
+    return features_dict
+
 
 
 def feature_analysis(links):
