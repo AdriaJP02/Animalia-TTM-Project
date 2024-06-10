@@ -1,33 +1,49 @@
-## Features & Specs
-- Manage access to the user's microphone via the **browser's Media-API**
-- Record, playback and revert audio-recordings in apps **deployed to the web**
-- Download the final recording to your local system! - **WAV, 16 bit, 44.1 kHz**
-- Directly return audio recording-data to Python backend! - **arrayBuffer format**<br>
+# Animal Sound Classification Project
 
-## Setup & How to Execute
-**1.** PIP Install the component
-```
-pip install streamlit #Interface
-pip install streamlit-audiorec #Audio input
-pip install pillow #Resize image
-pip install streamlit-image-select #Image select
-pip install pydub
-pip install -U hydralit_components
-```
-If you have some problems installing them, then try to add " --user" at the end of the commands 
+## Overview
+This project creates a machine learning model to classify animal sounds using a dataset from Freesound. The project includes dataset creation, audio processing, model development, and frontend development.
 
-**2.** Execute the frontend part
-```
-# In Ubuntu
-streamlit run ./Main_Page.py
-# In Windows
-streamlit run Main_Page.py
-```
-**3.** Modify the main.py
-```
-def main():
-    # Execute the command "streamlit run frontend/Main_Page.py"
-    #subprocess.run(["streamlit", "run","frontend/Main_Page.py"]) #In Windows
-    subprocess.run(["streamlit", "run", "./frontend/Main_Page.py"])  # In Ubuntu
-```
-Comment and descomment this line depending on the operative system you are using
+## Project Structure
+
+### Dataset and Audio Processing
+#### Dataset
+- Download samples from the Google Drive folder
+
+#### Audio Processing
+- Slice audio samples.
+- Extract features using Essentia.
+
+#### Machine Learning Model
+- Run extracted features through your choice of Machine Learning Model
+
+### Frontend and Development Environment
+#### Frontend
+- Frontend UI developed with Streamlit.
+
+## Installation
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/AdriaJP02/Animalia-TTM-Project.git
+    ```
+
+2. Install required packages:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3. Run the main script:
+    ```bash
+    python main.py
+    ```
+
+## Usage
+- **Dataset Creation:** Initiate with `create_dataset`.
+- **Feature Extraction:** Handle with `feature_analysis`. This also downloads the dataset if it is not available locally
+- **Model Training:** Run and evaluate with `run_machinelearningmodels`.
+- **Frontend:** Launch UI with Streamlit commands in the main script.
+
+## Code Structure
+- **dataset_creation:** Dataset creation scripts, creates JSON file for documentation.
+- **feature_analysis:** Feature extraction scripts, and downloads sounds from google drive.
+- **machinelearning_models:** Model development scripts, there are a variety of high-quality models in this folder.
+- **frontend:** UI implementation scripts.
