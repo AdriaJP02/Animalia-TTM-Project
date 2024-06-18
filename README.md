@@ -47,3 +47,7 @@ This project creates a machine learning model to classify animal sounds using a 
 - **feature_analysis:** Feature extraction scripts, and downloads sounds from google drive.
 - **machinelearning_models:** Model development scripts, there are a variety of high-quality models in this folder.
 - **frontend:** UI implementation scripts.
+
+## Animal Audios Attributions
+- **Some lion audios**: From aslan_46 to aslan_50, snippets cut from this audio: https://macaulaylibrary.org/asset/53438
+- **Rest of the audios**: From this GitHub repository: https://github.com/YashNita/Animal-Sound-Dataset
